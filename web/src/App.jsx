@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { ROUTES } from './utils/constant';
 import Home from './components/Home';
 import Login from './components/auth/Login';
@@ -9,20 +9,51 @@ import Analysis from './components/features/Analysis';
 import MealPlanner from './components/features/MealPlanner';
 import HealthTracker from './components/features/HealthTracker';
 import Updates from './components/features/Updates';
+import ProtectedRoute from './components/shared/ProtectedRoute';
 
 function App() {
   return (
     <Router>
       <Routes>
-        <Route path={ROUTES.HOME} element={<Home />} />
+        {/* Public Routes */}
         <Route path={ROUTES.LOGIN} element={<Login />} />
         <Route path={ROUTES.SIGNUP} element={<SignUp />} />
-        <Route path={ROUTES.PROFILE} element={<Profile />} />
         <Route path={ROUTES.LEARN_MORE} element={<LearnMore />} />
-        <Route path={ROUTES.ANALYSIS} element={<Analysis />} />
-        <Route path={ROUTES.MEAL_PLANNER} element={<MealPlanner />} />
-        <Route path={ROUTES.HEALTH_TRACKER} element={<HealthTracker />} />
-        <Route path={ROUTES.UPDATES} element={<Updates />} />
+        
+        {/* Protected Routes */}
+        <Route path={ROUTES.HOME} element={
+          <ProtectedRoute>
+            <Home />
+          </ProtectedRoute>
+        } />
+        <Route path={ROUTES.PROFILE} element={
+          <ProtectedRoute>
+            <Profile />
+          </ProtectedRoute>
+        } />
+        <Route path={ROUTES.ANALYSIS} element={
+          <ProtectedRoute>
+            <Analysis />
+          </ProtectedRoute>
+        } />
+        <Route path={ROUTES.MEAL_PLANNER} element={
+          <ProtectedRoute>
+            <MealPlanner />
+          </ProtectedRoute>
+        } />
+        <Route path={ROUTES.HEALTH_TRACKER} element={
+          <ProtectedRoute>
+            <HealthTracker />
+          </ProtectedRoute>
+        } />
+        <Route path={ROUTES.UPDATES} element={
+          <ProtectedRoute>
+            <Updates />
+          </ProtectedRoute>
+        } />
+
+        {/* Redirect any unknown routes to home */}
+        <Route path="*" element={<Navigate to={ROUTES.HOME} replace />} />
       </Routes>
     </Router>
   );
