@@ -1,67 +1,111 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { AUTH_ENDPOINTS, ROUTES, API_CONFIG } from '../../utils/constant';
+import { ROUTES } from '../../utils/constant';
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+import { Button } from "../ui/button";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "../ui/popover";
 
 const Navbar = () => {
     const navigate = useNavigate();
-    const [user, setUser] = useState(() => {
+    const [user] = useState(() => {
         const savedUser = localStorage.getItem('user');
         return savedUser ? JSON.parse(savedUser) : null;
     });
 
-    const handleLogout = async () => {
-        try {
-            const response = await fetch(AUTH_ENDPOINTS.LOGOUT, {
-                method: 'GET',
-                ...API_CONFIG
-            });
+    const handleLogout = () => {
+        localStorage.removeItem('user');
+        navigate(ROUTES.LOGIN);
+    };
 
-            if (response.ok) {
-                localStorage.removeItem('user');
-                setUser(null);
-                navigate(ROUTES.LOGIN);
-            }
-        } catch (error) {
-            console.error('Logout failed:', error);
-        }
+    const getInitials = (name) => {
+        if (!name) return 'U';
+        return name.split(' ').map(n => n[0]).join('').toUpperCase();
     };
 
     return (
-        <nav className="bg-white shadow">
+        <nav className="bg-white shadow-lg" role="navigation" aria-label="Main navigation">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex justify-between h-16">
-                    <div className="flex">
-                        <div className="flex-shrink-0 flex items-center">
-                            <Link to={ROUTES.HOME} className="text-2xl font-bold text-green-600">
-                                NutriGen
-                            </Link>
-                        </div>
+                    <div className="flex-shrink-0 flex items-center">
+                        <Link 
+                            to={ROUTES.HOME} 
+                            className="text-2xl font-bold text-green-600 hover:text-green-700 transition-colors duration-200"
+                            aria-label="NutriGen Home"
+                        >
+                            NutriGen
+                        </Link>
                     </div>
+
                     <div className="flex items-center">
                         {user ? (
-                            <div className="flex items-center space-x-4">
-                                <span className="text-gray-700">Welcome, {user.fullname}</span>
-                                <button
-                                    onClick={handleLogout}
-                                    className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
-                                >
-                                    Logout
-                                </button>
-                            </div>
+                            <Popover>
+                                <PopoverTrigger asChild>
+                                    <Button 
+                                        variant="ghost" 
+                                        className="relative h-8 w-8 rounded-full hover:bg-green-50 transition-all duration-200"
+                                        aria-label="Open user menu"
+                                    >
+                                        <Avatar className="h-8 w-8">
+                                            <AvatarImage src={user.avatar} alt={`${user.name}'s profile picture`} />
+                                            <AvatarFallback className="bg-green-100 text-green-600">
+                                                {getInitials(user.name)}
+                                            </AvatarFallback>
+                                        </Avatar>
+                                    </Button>
+                                </PopoverTrigger>
+                                <PopoverContent className="w-56" align="end">
+                                    <div className="grid gap-4">
+                                        <div className="px-2 py-1.5">
+                                            <span className="text-sm font-medium">
+                                                {user.name || 'User'}
+                                            </span>
+                                            <span className="text-xs text-gray-500 block">
+                                                {user.email}
+                                            </span>
+                                        </div>
+                                        <div className="grid gap-2">
+                                            <Button
+                                                variant="ghost"
+                                                className="w-full justify-start hover:text-green-600 hover:bg-green-50 transition-all duration-200"
+                                                onClick={() => navigate(ROUTES.PROFILE)}
+                                                aria-label="View your profile"
+                                            >
+                                                View Profile
+                                            </Button>
+                                            <Button
+                                                variant="ghost"
+                                                className="w-full justify-start text-red-600 hover:text-red-700 hover:bg-red-50 transition-all duration-200"
+                                                onClick={handleLogout}
+                                                aria-label="Log out of your account"
+                                            >
+                                                Log Out
+                                            </Button>
+                                        </div>
+                                    </div>
+                                </PopoverContent>
+                            </Popover>
                         ) : (
-                            <div className="flex items-center space-x-4">
-                                <Link
-                                    to={ROUTES.LOGIN}
-                                    className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-green-600 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+                            <div className="flex gap-4" role="navigation" aria-label="Authentication">
+                                <Button
+                                    variant="ghost"
+                                    onClick={() => navigate(ROUTES.LOGIN)}
+                                    className="hover:text-green-600 hover:bg-green-50 transition-all duration-200"
+                                    aria-label="Log in to your account"
                                 >
-                                    Sign in
-                                </Link>
-                                <Link
-                                    to={ROUTES.SIGNUP}
-                                    className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+                                    Log In
+                                </Button>
+                                <Button
+                                    variant="default"
+                                    onClick={() => navigate(ROUTES.SIGNUP)}
+                                    className="bg-green-600 hover:bg-green-700 transition-all duration-200"
+                                    aria-label="Create a new account"
                                 >
-                                    Sign up
-                                </Link>
+                                    Sign Up
+                                </Button>
                             </div>
                         )}
                     </div>

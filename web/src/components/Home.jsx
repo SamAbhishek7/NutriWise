@@ -58,7 +58,7 @@ const Home = () => {
         <div>
             <Navbar />
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="text-center py-16 px-4 sm:px-6 lg:px-8">
+                <div className="text-center py-12 px-4 sm:px-6 lg:px-8">
                     <h1 className="text-4xl tracking-tight font-extrabold text-gray-900 sm:text-5xl md:text-6xl">
                         <span className="block">Welcome to</span>
                         <span className="block text-green-600">NutriGen</span>
@@ -67,27 +67,10 @@ const Home = () => {
                         Your personal AI-powered nutrition assistant.
                         {!user && " Get started by creating an account or logging in."}
                     </p>
-                    <div className="mt-5 max-w-md mx-auto sm:flex sm:justify-center md:mt-8">
-                        <div className="rounded-md shadow">
-                            <Link
-                                to={user ? ROUTES.PROFILE : ROUTES.SIGNUP}
-                                className="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-white bg-green-600 hover:bg-green-700 md:py-4 md:text-lg md:px-10"
-                            >
-                                {user ? 'View Profile' : 'Get Started'}
-                            </Link>
-                        </div>
-                        <div className="mt-3 rounded-md shadow sm:mt-0 sm:ml-3">
-                            <Link
-                                to={ROUTES.LEARN_MORE}
-                                className="w-full flex items-center justify-center px-8 py-3 border border-transparent text-base font-medium rounded-md text-green-600 bg-white hover:bg-gray-50 md:py-4 md:text-lg md:px-10"
-                            >
-                                Learn More
-                            </Link>
-                        </div>
-                    </div>
+                   
                 </div>
 
-                <div className="py-2 bg-white">
+                <div className="bg-white">
                     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                         <div className="lg:text-center">
                             <p className="mt-2 text-3xl leading-8 font-extrabold tracking-tight text-gray-900 sm:text-4xl">
@@ -95,7 +78,7 @@ const Home = () => {
                             </p>
                         </div>
 
-                        <div className="mt-10">
+                        <div className="mt-10 mb-10">
                             <div className="grid grid-cols-1 gap-8 sm:grid-cols-2">
                                 {featureButtons.map((feature, index) => (
                                     <button
