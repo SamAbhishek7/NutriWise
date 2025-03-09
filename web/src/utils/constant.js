@@ -14,7 +14,11 @@ export const ROUTES = {
     LOGIN: '/login',
     SIGNUP: '/signup',
     PROFILE: '/profile',
-    LEARN_MORE: '/learn-more'
+    LEARN_MORE: '/learn-more',
+    ANALYSIS: '/analysis',
+    MEAL_PLANNER: '/meal-planner',
+    HEALTH_TRACKER: '/health-tracker',
+    UPDATES: '/updates'
 };
 
 // Local storage keys
