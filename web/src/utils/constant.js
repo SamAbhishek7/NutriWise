@@ -1,0 +1,36 @@
+// API Base URL
+export const API_BASE_URL = 'http://localhost:8000/api';
+
+// Auth Endpoints
+export const AUTH_ENDPOINTS = {
+    LOGIN: `${API_BASE_URL}/auth/login`,
+    REGISTER: `${API_BASE_URL}/auth/register`,
+    LOGOUT: `${API_BASE_URL}/auth/logout`
+};
+
+// Frontend Routes
+export const ROUTES = {
+    HOME: '/',
+    LOGIN: '/login',
+    SIGNUP: '/signup',
+    PROFILE: '/profile',
+    LEARN_MORE: '/learn-more'
+};
+
+// Local storage keys
+export const STORAGE_KEYS = {
+    USER: 'nutrigen_user'
+};
+
+// Default values
+export const DEFAULT_VALUES = {
+    AVATAR: 'https://api.dicebear.com/7.x/avataaars/svg' // For generating default avatar images
+};
+
+// API Configuration
+export const API_CONFIG = {
+    headers: {
+        'Content-Type': 'application/json'
+    },
+    credentials: 'include'
+};
