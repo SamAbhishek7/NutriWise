@@ -32,6 +32,24 @@ const mealPlanSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    currentWeight: {
+        type: Number,
+        required: true,
+        min: 30,
+        max: 200
+    },
+    targetWeight: {
+        type: Number,
+        required: true,
+        min: 30,
+        max: 200
+    },
+    height: {
+        type: Number,
+        required: true,
+        min: 100,
+        max: 250
+    },
     allergies: [String],
     monday: { type: dayMealPlanSchema, required: true },
     tuesday: { type: dayMealPlanSchema, required: true },
@@ -48,6 +66,8 @@ const mealPlanSchema = new mongoose.Schema({
         type: Date,
         default: Date.now
     }
+}, {
+    timestamps: true
 });
 
 mealPlanSchema.pre('save', function(next) {

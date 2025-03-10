@@ -24,7 +24,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 const PORT = process.env.PORT || 8000;
-const MONGO_URI = process.env.MONGO_URI;
+const MONGODB_URI = process.env.MONGODB_URI;
 
 // API Routes
 app.use("/api/auth", authRoute);
@@ -42,13 +42,19 @@ app.use((err, req, res, next) => {
 });
 
 // Connect to MongoDB and start server
-mongoose.connect(MONGO_URI)
+if (!MONGODB_URI) {
+  console.error('MONGODB_URI environment variable is not set');
+  process.exit(1);
+}
+
+mongoose.connect(MONGODB_URI)
   .then(() => {
     console.log("Connected to database");
     app.listen(PORT, () => {
       console.log(`Server is running on port ${PORT}`);
     });
   })
-  .catch((err) => {
-    console.error("Error connecting to database:", err);
+  .catch((error) => {
+    console.error('MongoDB connection error:', error);
+    process.exit(1);
   });

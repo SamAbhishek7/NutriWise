@@ -139,73 +139,91 @@ export const getFeedbackController = async (req, res) => {
 
 export const generateMealPlan = async (req, res) => {
     try {
-        const { dietType, fitnessGoal, region, allergies, excludeIngredients, userId } = req.body;
+        const { dietType, fitnessGoal, region, targetWeight, currentWeight, height, allergies, userId } = req.body;
 
-        if (!dietType || !fitnessGoal || !region || !userId) {
-            return res.status(400).json({ error: 'Diet type, fitness goal, region, and user ID are required' });
+        if (!dietType || !fitnessGoal || !region || !userId || !targetWeight || !currentWeight || !height) {
+            return res.status(400).json({ error: 'All fields are required' });
         }
 
         // Initialize the model
         const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
-        // Calculate target calories based on fitness goal
+        // Calculate BMI and weight difference
+        const bmi = currentWeight / ((height / 100) * (height / 100));
+        const weightDifference = targetWeight - currentWeight;
+        const weightChangePerWeek = weightDifference > 0 ? 0.5 : -0.5; // 0.5 kg per week is a healthy rate
+
+        // Calculate target calories based on BMI and fitness goal
         let targetCalories;
-        switch (fitnessGoal) {
-            case 'weight_loss':
-                targetCalories = '1500-1800';
-                break;
-            case 'weight_gain':
-                targetCalories = '2800-3200';
-                break;
-            case 'muscle_gain':
-                targetCalories = '2500-3000';
-                break;
-            case 'maintenance':
-                targetCalories = '2000-2500';
-                break;
-            case 'general_fitness':
-                targetCalories = '2000-2300';
-                break;
-            default:
-                targetCalories = '2000-2500';
+        let emphasis = '';
+
+        if (fitnessGoal === 'weight_loss') {
+            targetCalories = Math.max(1500, Math.round((currentWeight * 22) - 500)); // 500 calorie deficit
+            emphasis = 'Focus on high-protein, low-calorie meals with plenty of fiber to maintain satiety.';
+        } else if (fitnessGoal === 'weight_gain') {
+            targetCalories = Math.round((currentWeight * 24) + 500); // 500 calorie surplus
+            emphasis = 'Include calorie-dense but healthy foods, with adequate protein for muscle maintenance.';
+        } else if (fitnessGoal === 'muscle_gain') {
+            targetCalories = Math.round((currentWeight * 24) + 300); // Moderate surplus for muscle gain
+            emphasis = 'High protein meals with complex carbohydrates for energy and recovery.';
+        } else if (fitnessGoal === 'maintenance') {
+            targetCalories = Math.round(currentWeight * 22); // Maintenance calories
+            emphasis = 'Balanced macronutrients with focus on whole foods and variety.';
+        } else {
+            targetCalories = Math.round(currentWeight * 22); // Default to maintenance
+            emphasis = 'Nutritionally balanced meals with emphasis on whole foods.';
         }
 
-        const selectedRegion = regionInfo[region];
-        
         // Create the prompt for meal plan generation
         const prompt = `Generate a 7-day meal plan with the following requirements:
-        - Diet Type: ${dietType}
-        - Fitness Goal: ${fitnessGoal}
-        - Daily Calorie Target: ${targetCalories} calories
-        - Regional Cuisine: ${selectedRegion.description}
-        - Common Ingredients: ${selectedRegion.ingredients}
-        - Typical Dishes: ${selectedRegion.common_dishes}
-        ${allergies?.length ? `- Allergies to avoid: ${allergies.join(', ')}` : ''}
-        ${excludeIngredients?.length ? `- Ingredients to exclude: ${excludeIngredients.join(', ')}` : ''}
 
-        Please provide the meal plan in the following JSON format:
-        {
-            "monday": {
-                "breakfast": { "name": "meal name", "calories": "calories in numbers only" },
-                "lunch": { "name": "meal name", "calories": "calories in numbers only" },
-                "dinner": { "name": "meal name", "calories": "calories in numbers only" },
-                "snacks": { "name": "snack options", "calories": "calories in numbers only" }
-            },
-            // Repeat for all days of the week (tuesday through sunday)
-        }
+Current Stats:
+- Current Weight: ${currentWeight} kg
+- Target Weight: ${targetWeight} kg
+- Height: ${height} cm
+- BMI: ${bmi.toFixed(1)}
+- Weight Change Goal: ${weightDifference > 0 ? 'Gain' : 'Lose'} ${Math.abs(weightDifference)} kg
+- Recommended Rate: ${Math.abs(weightChangePerWeek)} kg per week
 
-        Guidelines:
-        1. Use authentic ${region} ingredients and cooking styles
-        2. Adapt traditional dishes to meet the ${fitnessGoal} requirements
-        3. Ensure each day's total calories match the daily target
-        4. For ${fitnessGoal}, focus on:
-        ${fitnessGoal === 'weight_loss' ? '- Lower calorie versions of traditional dishes\n- High protein and fiber content\n- Smaller portions while maintaining authenticity' : ''}
-        ${fitnessGoal === 'weight_gain' ? '- Larger portions of traditional dishes\n- Healthy calorie-dense ingredients\n- Additional protein sources' : ''}
-        ${fitnessGoal === 'muscle_gain' ? '- High protein traditional dishes\n- Complex carbohydrates\n- Post-workout meal options' : ''}
-        ${fitnessGoal === 'maintenance' ? '- Balanced portions of traditional dishes\n- Mix of proteins, carbs, and healthy fats\n- Variety in cooking methods' : ''}
-        ${fitnessGoal === 'general_fitness' ? '- Balanced traditional meals\n- Focus on whole ingredients\n- Moderate portions' : ''}
+Diet Requirements:
+- Diet Type: ${dietType}
+- Fitness Goal: ${fitnessGoal}
+- Daily Calorie Target: ${targetCalories} calories
+- Regional Cuisine: ${regionInfo[region].description}
+- Common Ingredients: ${regionInfo[region].ingredients}
+- Typical Dishes: ${regionInfo[region].common_dishes}
+${allergies?.length ? `- Allergies to avoid: ${allergies.join(', ')}` : ''}
 
-        Return ONLY the JSON object, no additional text.`;
+Nutritional Focus:
+${emphasis}
+- Adjust portion sizes to meet calorie goals while maintaining authentic flavors
+- Include protein in every meal for satiety and muscle maintenance
+- Balance complex carbohydrates and healthy fats
+- Incorporate vegetables and fiber-rich foods
+
+Please provide the meal plan in the following JSON format:
+{
+    "monday": {
+        "breakfast": { "name": "meal name", "calories": "calories in numbers only" },
+        "lunch": { "name": "meal name", "calories": "calories in numbers only" },
+        "dinner": { "name": "meal name", "calories": "calories in numbers only" },
+        "snacks": { "name": "snack options", "calories": "calories in numbers only" }
+    },
+    // Repeat for all days of the week (tuesday through sunday)
+}
+
+Guidelines:
+1. Use authentic ${region} ingredients and cooking styles
+2. Adapt traditional dishes to meet the ${fitnessGoal} requirements
+3. Ensure each day's total calories match the daily target
+4. For ${fitnessGoal}, focus on:
+${fitnessGoal === 'weight_loss' ? '- Lower calorie versions of traditional dishes\n- High protein and fiber content\n- Smaller portions while maintaining authenticity' : ''}
+${fitnessGoal === 'weight_gain' ? '- Larger portions of traditional dishes\n- Healthy calorie-dense ingredients\n- Additional protein sources' : ''}
+${fitnessGoal === 'muscle_gain' ? '- High protein traditional dishes\n- Complex carbohydrates\n- Post-workout meal options' : ''}
+${fitnessGoal === 'maintenance' ? '- Balanced portions of traditional dishes\n- Mix of proteins, carbs, and healthy fats\n- Variety in cooking methods' : ''}
+${fitnessGoal === 'general_fitness' ? '- Balanced traditional meals\n- Focus on whole ingredients\n- Moderate portions' : ''}
+
+Return ONLY the JSON object, no additional text.`;
 
         // Generate response
         const result = await model.generateContent(prompt);
@@ -246,8 +264,10 @@ export const generateMealPlan = async (req, res) => {
                 dietType,
                 fitnessGoal,
                 region,
+                targetWeight,
+                currentWeight,
+                height,
                 allergies: allergies || [],
-                excludeIngredients: excludeIngredients || [],
                 ...mealPlanData
             },
             { new: true, upsert: true }
@@ -266,6 +286,16 @@ export const generateMealPlan = async (req, res) => {
 export const getUserMealPlan = async (req, res) => {
     try {
         const { userId } = req.params;
+        
+        if (!userId) {
+            return res.status(400).json({ error: 'User ID is required' });
+        }
+
+        // Validate if userId is a valid ObjectId
+        if (!/^[0-9a-fA-F]{24}$/.test(userId)) {
+            return res.status(400).json({ error: 'Invalid user ID format' });
+        }
+
         const mealPlan = await MealPlan.findOne({ userId });
         
         if (!mealPlan) {
@@ -275,7 +305,10 @@ export const getUserMealPlan = async (req, res) => {
         res.json({ mealPlan });
     } catch (error) {
         console.error('Error fetching meal plan:', error);
-        res.status(500).json({ error: 'Failed to fetch meal plan' });
+        res.status(500).json({ 
+            error: 'Failed to fetch meal plan',
+            message: error.message 
+        });
     }
 };
 
@@ -332,5 +365,79 @@ export const analyzeFood = async (req, res) => {
     } catch (error) {
         console.error('Analysis error:', error);
         res.status(500).json({ error: 'Failed to analyze food item' });
+    }
+};
+
+export const generateRecipe = async (req, res) => {
+    try {
+        const { foodItem } = req.body;
+
+        if (!foodItem) {
+            return res.status(400).json({ error: 'Food item is required' });
+        }
+
+        // Initialize the model
+        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+
+        const prompt = `Generate a detailed recipe and grocery list for ${foodItem}. 
+        
+Please provide the response in the following JSON format:
+{
+    "recipe": {
+        "name": "Full name of the dish",
+        "servings": "Number of servings",
+        "prepTime": "Preparation time in minutes",
+        "cookTime": "Cooking time in minutes",
+        "difficulty": "Easy/Medium/Hard",
+        "ingredients": [
+            {
+                "item": "Ingredient name",
+                "amount": "Amount needed",
+                "unit": "Unit of measurement"
+            }
+        ],
+        "instructions": [
+            "Step 1 description",
+            "Step 2 description",
+            etc.
+        ],
+        "nutritionPerServing": {
+            "calories": "number",
+            "protein": "grams",
+            "carbs": "grams",
+            "fat": "grams"
+        }
+    },
+    "groceryList": {
+        "produce": ["List of produce items"],
+        "dairy": ["List of dairy items"],
+        "pantry": ["List of pantry items"],
+        "meat": ["List of meat items"],
+        "spices": ["List of spices"]
+    }
+}
+
+Return ONLY the JSON object, no additional text.`;
+
+        // Generate response
+        const result = await model.generateContent(prompt);
+        const response = await result.response;
+        const text = response.text();
+
+        // Extract JSON from the response
+        const jsonMatch = text.match(/\{[\s\S]*\}/);
+        if (!jsonMatch) {
+            throw new Error('Failed to parse recipe data');
+        }
+
+        const recipeData = JSON.parse(jsonMatch[0]);
+
+        res.json(recipeData);
+    } catch (error) {
+        console.error('Recipe generation error:', error);
+        res.status(500).json({ 
+            error: 'Failed to generate recipe',
+            message: error.message 
+        });
     }
 };
