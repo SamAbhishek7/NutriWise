@@ -58,7 +58,7 @@ export const getNutritionInfo = async (foodItem) => {
     if (!foodItem) {
       throw new Error('Food item is required');
     }
-
+console.log("hi i am in nutiritoin");
     const model = genAI.getGenerativeModel({ 
       model: MODEL_NAME,
       generationConfig: {
@@ -121,32 +121,5 @@ export const getMealPlan = async (userInput) => {
   } catch (error) {
     console.error('Error in getMealPlan:', error);
     throw new Error(error.message || 'Failed to generate meal plan');
-  }
-};
-
-export const getFeedback = async (mealLog) => {
-  try {
-    if (!mealLog) {
-      throw new Error('Meal log is required');
-    }
-
-    const model = genAI.getGenerativeModel({ 
-      model: MODEL_NAME,
-      generationConfig: {
-        temperature: 0.7,
-        maxOutputTokens: 1000,
-      }
-    });
-
-    const prompt = `Analyze this meal log and provide:
-    1. Nutritional balance assessment
-    2. Areas for improvement
-    3. Specific recommendations
-    Meal log: ${mealLog}`;
-    
-    return await safeGenerateContent(model, prompt);
-  } catch (error) {
-    console.error('Error in getFeedback:', error);
-    throw new Error(error.message || 'Failed to get feedback');
   }
 };

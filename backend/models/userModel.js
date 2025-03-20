@@ -39,14 +39,8 @@ const userSchema = new mongoose.Schema({
         type: Number,
         min: 0
     },
-    dietaryPreferences: [{
-        type: String,
-        enum: ['vegetarian', 'vegan', 'pescatarian', 'keto', 'paleo', 'none']
-    }],
+
     allergies: [{
-        type: String
-    }],
-    healthConditions: [{
         type: String
     }],
     activityLevel: {

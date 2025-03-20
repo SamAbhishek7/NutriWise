@@ -1,4 +1,4 @@
-import { getNutritionInfo, getMealPlan, getFeedback } from '../utils/geminiService.js';
+import { getNutritionInfo, getMealPlan } from '../utils/geminiService.js';
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import MealPlan from '../models/MealPlan.js';
 
@@ -105,37 +105,6 @@ export const getMealPlanController = async (req, res) => {
   }
 };
 
-export const getFeedbackController = async (req, res) => {
-    try {
-      const { meal, food, quantity } = req.body;
-  
-      if (!meal || !food || !quantity) {
-        return res.status(400).json({ 
-          error: 'Bad Request',
-          message: 'Meal, food, and quantity are required in request body.' 
-        });
-      }
-  
-      // Convert single meal input into text
-      const formattedMealLog = `
-        **Meal:** ${meal}
-        **Food:** ${food}
-        **Quantity:** ${quantity}
-      `;
-  
-      // Now pass the formatted text to Gemini API
-      const data = await getFeedback(formattedMealLog);
-  
-      res.status(200).json({ success: true, data });
-    } catch (error) {
-      console.error('Error in getFeedbackController:', error);
-      res.status(500).json({ 
-        error: 'Internal Server Error',
-        message: error.message || 'Failed to get feedback',
-        details: process.env.NODE_ENV === 'development' ? error.stack : undefined
-      });
-    }
-};
 
 export const generateMealPlan = async (req, res) => {
     try {
@@ -144,7 +113,7 @@ export const generateMealPlan = async (req, res) => {
         if (!dietType || !fitnessGoal || !region || !userId || !targetWeight || !currentWeight || !height) {
             return res.status(400).json({ error: 'All fields are required' });
         }
-
+console.log(targetWeight);
         // Initialize the model
         const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
@@ -318,7 +287,7 @@ export const analyzeFood = async (req, res) => {
         if (!food) {
             return res.status(400).json({ error: 'Food item is required' });
         }
-
+console.log("I am analuse");
         // Initialize the model
         const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
 
@@ -422,15 +391,22 @@ Return ONLY the JSON object, no additional text.`;
         // Generate response
         const result = await model.generateContent(prompt);
         const response = await result.response;
-        const text = response.text();
+        const text = await response.text();  // Await this properly
 
-        // Extract JSON from the response
+        // Use regex to extract JSON reliably
         const jsonMatch = text.match(/\{[\s\S]*\}/);
+
         if (!jsonMatch) {
-            throw new Error('Failed to parse recipe data');
+            throw new Error('Failed to parse recipe data. Invalid JSON structure.');
         }
 
-        const recipeData = JSON.parse(jsonMatch[0]);
+        let recipeData;
+        try {
+            recipeData = JSON.parse(jsonMatch[0]);
+        } catch (parseError) {
+            console.error('JSON parsing error:', parseError);
+            throw new Error('Failed to parse valid JSON from the AI response.');
+        }
 
         res.json(recipeData);
     } catch (error) {
@@ -441,3 +417,4 @@ Return ONLY the JSON object, no additional text.`;
         });
     }
 };
+
