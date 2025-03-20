@@ -1,4 +1,4 @@
-import { getNutritionInfo, getMealPlan } from '../utils/geminiService.js';
+import {  getMealPlan } from '../utils/geminiService.js';
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import MealPlan from '../models/MealPlan.js';
 
@@ -59,33 +59,10 @@ const regionInfo = {
     }
 };
 
-export const getNutritionInfoController = async (req, res) => {
-  try {
-    const { foodItem } = req.body;
-    
-    if (!foodItem) {
-      return res.status(400).json({ 
-        error: 'Bad Request',
-        message: 'Food item is required in request body' 
-      });
-    }
-
-    const data = await getNutritionInfo(foodItem);
-    res.status(200).json({ success: true, data });
-  } catch (error) {
-    console.error('Error in getNutritionInfoController:', error);
-    res.status(500).json({ 
-      error: 'Internal Server Error',
-      message: error.message || 'Failed to fetch nutrition information',
-      details: process.env.NODE_ENV === 'development' ? error.stack : undefined
-    });
-  }
-};
-
 export const getMealPlanController = async (req, res) => {
   try {
     const { userInput } = req.body;
-
+console.log("fd");
     if (!userInput) {
       return res.status(400).json({ 
         error: 'Bad Request',
@@ -336,7 +313,6 @@ console.log("I am analuse");
         res.status(500).json({ error: 'Failed to analyze food item' });
     }
 };
-
 export const generateRecipe = async (req, res) => {
     try {
         const { foodItem } = req.body;
@@ -417,4 +393,3 @@ Return ONLY the JSON object, no additional text.`;
         });
     }
 };
-
