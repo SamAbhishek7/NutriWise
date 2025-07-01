@@ -21,7 +21,7 @@ const Analysis = () => {
         setError(null);
 
         try {
-            const response = await fetch('http://localhost:8000/api/analyze', {
+            const response = await fetch('http://localhost:8000/api/gemini/analyze', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -144,7 +144,7 @@ const Analysis = () => {
                                     <div className="flex justify-between items-center">
                                         <span>Total Calories</span>
                                         <span className="text-2xl font-bold">
-                                            {nutritionData.calories} kcal
+                                            {nutritionData.calories} cal
                                         </span>
                                     </div>
                                     <div className="space-y-2">
@@ -152,15 +152,15 @@ const Analysis = () => {
                                         <ul className="space-y-1 text-sm">
                                             <li className="flex justify-between">
                                                 <span>From Protein</span>
-                                                <span>{nutritionData.calorieBreakdown.protein} kcal</span>
+                                                <span>{nutritionData.calorieBreakdown.protein} cal</span>
                                             </li>
                                             <li className="flex justify-between">
                                                 <span>From Carbs</span>
-                                                <span>{nutritionData.calorieBreakdown.carbs} kcal</span>
+                                                <span>{nutritionData.calorieBreakdown.carbs} cal</span>
                                             </li>
                                             <li className="flex justify-between">
                                                 <span>From Fat</span>
-                                                <span>{nutritionData.calorieBreakdown.fat} kcal</span>
+                                                <span>{nutritionData.calorieBreakdown.fat} cal</span>
                                             </li>
                                         </ul>
                                     </div>

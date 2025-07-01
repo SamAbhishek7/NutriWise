@@ -5,7 +5,7 @@ import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import authRoute from './routes/authRoute.js';
 import geminiRoutes from './routes/geminiRoutes.js';
-import analysisRoutes from './routes/analysisRoutes.js';
+
 
 const app = express();
 dotenv.config();
@@ -29,7 +29,7 @@ const MONGODB_URI = process.env.MONGODB_URI;
 // API Routes
 app.use("/api/auth", authRoute);
 app.use('/api/gemini', geminiRoutes);
-app.use('/api', analysisRoutes);
+
 
 // Error handling middleware
 app.use((err, req, res, next) => {

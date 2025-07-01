@@ -8,7 +8,7 @@ const Profile = () => {
     const [user, setUser] = useState(null);
     const [isEditing, setIsEditing] = useState(false);
     const [formData, setFormData] = useState({
-        name: '',
+        fullname: '',
         age: '',
         height: '',
         weight: '',
@@ -25,7 +25,7 @@ const Profile = () => {
         const userData = JSON.parse(savedUser);
         setUser(userData);
         setFormData({
-            name: userData.name || '',
+            fullname: userData.fullname || '',
             age: userData.age || '',
             height: userData.height || '',
             weight: userData.weight || '',
@@ -81,8 +81,8 @@ const Profile = () => {
                                     <label className="block text-sm font-medium text-gray-700">Name</label>
                                     <input
                                         type="text"
-                                        name="name"
-                                        value={formData.name}
+                                        name="fullname"
+                                        value={formData.fullname}
                                         onChange={handleInputChange}
                                         className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-green-500 focus:ring-green-500"
                                     />
@@ -152,7 +152,7 @@ const Profile = () => {
                             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
                                 <div>
                                     <h3 className="text-sm font-medium text-gray-500">Name</h3>
-                                    <p className="mt-1 text-lg text-gray-900">{user.name || 'Not set'}</p>
+                                    <p className="mt-1 text-lg text-gray-900">{user.fullname || 'Not set'}</p>
                                 </div>
                                 <div>
                                     <h3 className="text-sm font-medium text-gray-500">Age</h3>

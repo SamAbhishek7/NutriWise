@@ -34,9 +34,9 @@ const Navbar = () => {
                         <Link 
                             to={ROUTES.HOME} 
                             className="text-2xl font-bold text-green-600 hover:text-green-700 transition-colors duration-200"
-                            aria-label="NutriGen Home"
+                            aria-label="NutriWise Home"
                         >
-                            NutriGen
+                            NutriWise
                         </Link>
                     </div>
 
@@ -50,9 +50,9 @@ const Navbar = () => {
                                         aria-label="Open user menu"
                                     >
                                         <Avatar className="h-8 w-8">
-                                            <AvatarImage src={user.avatar} alt={`${user.name}'s profile picture`} />
+                                            <AvatarImage src={user.avatar} alt={`${user.fullname}'s profile picture`} />
                                             <AvatarFallback className="bg-green-100 text-green-600">
-                                                {getInitials(user.name)}
+                                                {getInitials(user.fullname)}
                                             </AvatarFallback>
                                         </Avatar>
                                     </Button>
@@ -61,7 +61,7 @@ const Navbar = () => {
                                     <div className="grid gap-4">
                                         <div className="px-2 py-1.5">
                                             <span className="text-sm font-medium">
-                                                {user.name || 'User'}
+                                                {user.fullname || 'User'}
                                             </span>
                                             <span className="text-xs text-gray-500 block">
                                                 {user.email}

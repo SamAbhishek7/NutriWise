@@ -10,7 +10,7 @@ import { ROUTES } from '../../utils/constant';
 const SignUp = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
-    name: '',
+    fullname: '',
     email: '',
     password: '',
     confirmPassword: '',

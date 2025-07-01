@@ -53,50 +53,6 @@ const safeGenerateContent = async (model, prompt) => {
   }
 };
 
-export const getNutritionInfo = async (foodItem) => {
-  try {
-    if (!foodItem) {
-      throw new Error('Food item is required');
-    }
-console.log("hi i am in nutiritoin");
-    const model = genAI.getGenerativeModel({ 
-      model: MODEL_NAME,
-      generationConfig: {
-        temperature: 0.7,
-        maxOutputTokens: 1000,
-      }
-    });
-
-    const prompt = `Provide a detailed nutritional analysis for ${foodItem}. 
-    The response should be in a clean JSON format with the following keys:
-    - "calories": (in kcal)
-    - "macronutrients": {
-        "protein": (in grams),
-        "carbs": (in grams),
-        "fats": (in grams)
-      }
-    - "keyVitaminsAndMinerals": [
-        (list of key vitamins and minerals)
-      ]
-    - "healthBenefits": [
-        (list of health benefits)
-      ]
-    
-    The response should be strictly in JSON format without any extra text or explanation.`;
-    
-    const response = await safeGenerateContent(model, prompt);
-    
-    try {
-      return JSON.parse(response);
-    } catch (parseError) {
-      return response;
-    }
-  } catch (error) {
-    console.error('Error in getNutritionInfo:', error);
-    throw new Error(error.message || 'Failed to get nutrition information');
-  }
-};
-
 export const getMealPlan = async (userInput) => {
   try {
     if (!userInput) {

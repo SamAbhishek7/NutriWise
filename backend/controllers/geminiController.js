@@ -59,29 +59,6 @@ const regionInfo = {
     }
 };
 
-export const getMealPlanController = async (req, res) => {
-  try {
-    const { userInput } = req.body;
-console.log("fd");
-    if (!userInput) {
-      return res.status(400).json({ 
-        error: 'Bad Request',
-        message: 'User preferences are required in request body' 
-      });
-    }
-
-    const data = await getMealPlan(userInput);
-    res.status(200).json({ success: true, data });
-  } catch (error) {
-    console.error('Error in getMealPlanController:', error);
-    res.status(500).json({ 
-      error: 'Internal Server Error',
-      message: error.message || 'Failed to generate meal plan',
-      details: process.env.NODE_ENV === 'development' ? error.stack : undefined
-    });
-  }
-};
-
 
 export const generateMealPlan = async (req, res) => {
     try {
@@ -285,7 +262,7 @@ console.log("I am analuse");
                 "potassium": "amount with unit",
                 "sodium": "amount with unit"
             },
-            "calories": "total calories in kcal",
+            "calories": "total calories in calories",
             "calorieBreakdown": {
                 "protein": "calories from protein",
                 "carbs": "calories from carbs",
@@ -343,8 +320,7 @@ Please provide the response in the following JSON format:
         ],
         "instructions": [
             "Step 1 description",
-            "Step 2 description",
-            etc.
+            "Step 2 description"
         ],
         "nutritionPerServing": {
             "calories": "number",
@@ -367,9 +343,9 @@ Return ONLY the JSON object, no additional text.`;
         // Generate response
         const result = await model.generateContent(prompt);
         const response = await result.response;
-        const text = await response.text();  // Await this properly
+        const text = await response.text();
 
-        // Use regex to extract JSON reliably
+        // Attempt to extract JSON content
         const jsonMatch = text.match(/\{[\s\S]*\}/);
 
         if (!jsonMatch) {
@@ -378,7 +354,9 @@ Return ONLY the JSON object, no additional text.`;
 
         let recipeData;
         try {
-            recipeData = JSON.parse(jsonMatch[0]);
+            // Clean the JSON string to handle any unwanted characters
+            const cleanedJson = jsonMatch[0].replace(/(\r\n|\n|\r|\t)/gm, "");  // Remove line breaks and tabs
+            recipeData = JSON.parse(cleanedJson);
         } catch (parseError) {
             console.error('JSON parsing error:', parseError);
             throw new Error('Failed to parse valid JSON from the AI response.');
@@ -393,3 +371,4 @@ Return ONLY the JSON object, no additional text.`;
         });
     }
 };
+

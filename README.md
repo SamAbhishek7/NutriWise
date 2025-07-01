@@ -1,5 +1,5 @@
-# 🍽 NutriGen  
-NutriGen is a web-based application designed to provide users with detailed nutritional information about various food items, helping individuals make informed dietary choices. Leveraging the power of Google Generative AI, NutriGen delivers instant, comprehensive data on:  
+# 🍽 NutriWise  
+NutriWise is a web-based application designed to provide users with detailed nutritional information about various food items, helping individuals make informed dietary choices. Leveraging the power of Google Generative AI, NutriWise delivers instant, comprehensive data on:  
 
 - Macronutrients (Protein, Fat, Carbohydrates)  
 - Micronutrients (Vitamins, Minerals)  
@@ -40,4 +40,4 @@ The application also generates personalized meal plans based on user input, ensu
 - Scalability: Ensuring MongoDB efficiently handles large datasets  
 - Performance Optimization: Minimizing API response times for a smooth user experience  
 
-NutriGen - Your AI-Powered Nutrition Guide!
+NutriWise - Your AI-Powered Nutrition Guide!
