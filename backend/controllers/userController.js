@@ -5,7 +5,13 @@ import asyncHandler from 'express-async-handler';
 // @route   PUT /api/users/profile
 // @access  Private
 export const updateUserProfile = asyncHandler(async (req, res) => {
-    const user = await User.findById(req.user._id);
+    // Using req.userId from the isAuthenticated middleware
+    const user = await User.findById(req.userId);
+    
+    if (!user) {
+        res.status(404);
+        throw new Error('User not found');
+    }
 
     if (user) {
         user.fullname = req.body.fullname || user.fullname;
@@ -37,7 +43,8 @@ export const updateUserProfile = asyncHandler(async (req, res) => {
 // @route   GET /api/users/profile
 // @access  Private
 export const getUserProfile = asyncHandler(async (req, res) => {
-    const user = await User.findById(req.user._id).select('-password');
+    // Using req.userId from the isAuthenticated middleware
+    const user = await User.findById(req.userId).select('-password');
     
     if (user) {
         res.json(user);
