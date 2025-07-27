@@ -4,6 +4,7 @@ import { ROUTES } from '../../utils/constant';
 import Navbar from '../shared/Navbar';
 import { User, UserCog, ArrowLeft, Save, Edit2, Ruler, Scale, Utensils, Target, Loader2 } from 'lucide-react';
 import { toast } from 'react-toastify';
+import userService from '../../services/userService';
 
 const Profile = () => {
     const navigate = useNavigate();
@@ -27,15 +28,24 @@ const Profile = () => {
                     navigate(ROUTES.LOGIN);
                     return;
                 }
+                
                 const userData = JSON.parse(savedUser);
-                setUser(userData);
+                const token = localStorage.getItem('token');
+                
+                // Fetch the latest user data from the server
+                const updatedUser = await userService.getProfile(token);
+                
+                // Update local storage with the latest data
+                localStorage.setItem('user', JSON.stringify(updatedUser));
+                
+                setUser(updatedUser);
                 setFormData({
-                    fullname: userData.fullname || '',
-                    age: userData.age || '',
-                    height: userData.height || '',
-                    weight: userData.weight || '',
-                    dietaryPreferences: userData.dietaryPreferences || '',
-                    healthGoals: userData.healthGoals || ''
+                    fullname: updatedUser.fullname || '',
+                    age: updatedUser.age || '',
+                    height: updatedUser.height || '',
+                    weight: updatedUser.weight || '',
+                    dietaryPreferences: updatedUser.dietaryPreferences || '',
+                    healthGoals: updatedUser.healthGoals || ''
                 });
             } catch (error) {
                 console.error('Error loading user data:', error);
@@ -58,17 +68,26 @@ const Profile = () => {
         e.preventDefault();
         setIsLoading(true);
         try {
-            // Simulate API call
-            await new Promise(resolve => setTimeout(resolve, 1000));
+            const token = localStorage.getItem('token');
+            if (!token) {
+                navigate(ROUTES.LOGIN);
+                return;
+            }
             
-            const updatedUser = { ...user, ...formData };
+            // Update profile on the server
+            const updatedUser = await userService.updateProfile(formData, token);
+            
+            // Update local storage with the updated user data
             localStorage.setItem('user', JSON.stringify(updatedUser));
+            
+            // Update the UI
             setUser(updatedUser);
             setIsEditing(false);
+            
             toast.success('Profile updated successfully!');
         } catch (error) {
             console.error('Error updating profile:', error);
-            toast.error('Failed to update profile');
+            toast.error(error.response?.data?.message || 'Failed to update profile');
         } finally {
             setIsLoading(false);
         }

@@ -53,6 +53,14 @@ const userSchema = new mongoose.Schema({
         default: 2000,
         min: 500,
         max: 10000
+    },
+    dietaryPreferences: {
+        type: String,
+        default: ''
+    },
+    healthGoals: {
+        type: String,
+        default: ''
     }
 }, 
 { timestamps: true });
