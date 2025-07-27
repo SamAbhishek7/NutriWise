@@ -5,6 +5,7 @@ import mongoose from 'mongoose';
 import dotenv from 'dotenv';
 import authRoute from './routes/authRoute.js';
 import geminiRoutes from './routes/geminiRoutes.js';
+import calorieRoutes from './routes/calorieRoutes.js';
 
 
 const app = express();
@@ -29,6 +30,7 @@ const MONGODB_URI = process.env.MONGODB_URI;
 // API Routes
 app.use("/api/auth", authRoute);
 app.use('/api/gemini', geminiRoutes);
+app.use('/api/calories', calorieRoutes);
 
 
 // Error handling middleware

@@ -28,7 +28,8 @@ export const STORAGE_KEYS = {
 
 // Default values
 export const DEFAULT_VALUES = {
-    AVATAR: 'https://api.dicebear.com/7.x/avataaars/svg' // For generating default avatar images
+    AVATAR: 'https://api.dicebear.com/7.x/avataaars/svg', // For generating default avatar images
+    DAILY_CALORIE_GOAL: 2000 // Default daily calorie goal
 };
 
 // API Configuration

@@ -47,8 +47,16 @@ const userSchema = new mongoose.Schema({
         type: String,
         enum: ['sedentary', 'light', 'moderate', 'active', 'very_active'],
         default: 'moderate'
+    },
+    dailyCalorieGoal: {
+        type: Number,
+        default: 2000,
+        min: 500,
+        max: 10000
     }
 }, 
 { timestamps: true });
 
-export const User = mongoose.model('User', userSchema);
+const User = mongoose.model('User', userSchema);
+
+export default User;

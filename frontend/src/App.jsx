@@ -7,7 +7,7 @@ import Profile from './components/auth/Profile';
 import LearnMore from './components/LearnMore';
 import Analysis from './components/features/Analysis';
 import MealPlanner from './components/features/MealPlanner';
-import HealthTracker from './components/features/HealthTracker';
+
 import Updates from './components/features/Recipe';
 import ProtectedRoute from './components/shared/ProtectedRoute';
 
@@ -39,11 +39,6 @@ function App() {
         <Route path={ROUTES.MEAL_PLANNER} element={
           <ProtectedRoute>
             <MealPlanner />
-          </ProtectedRoute>
-        } />
-        <Route path={ROUTES.HEALTH_TRACKER} element={
-          <ProtectedRoute>
-            <HealthTracker />
           </ProtectedRoute>
         } />
         <Route path={ROUTES.UPDATES} element={

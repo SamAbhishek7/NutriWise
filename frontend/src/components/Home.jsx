@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ROUTES } from '../utils/constant';
 import Navbar from './shared/Navbar';
+import Footer from './shared/Footer';
 
 const Home = () => {
     const [user] = useState(() => {
@@ -13,7 +14,7 @@ const Home = () => {
 
     const featureButtons = [
         {
-            title: "AI Analysis",
+            title: "Nutrition Analysis",
             description: "Get instant nutritional information",
             path: "/analysis",
             icon: (
@@ -28,17 +29,7 @@ const Home = () => {
             path: "/meal-planner",
             icon: (
                 <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16" />
-                </svg>
-            )
-        },
-        {
-            title: "Health Tracker",
-            description: "Monitor your progress",
-            path: "/health-tracker",
-            icon: (
-                <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
             )
         },
@@ -48,7 +39,7 @@ const Home = () => {
             path: "/updates",
             icon: (
                 <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
                 </svg>
             )
         }
@@ -79,7 +70,7 @@ const Home = () => {
                         </div>
 
                         <div className="mt-10 mb-10">
-                            <div className="grid grid-cols-1 gap-8 sm:grid-cols-2">
+                            <div className="grid grid-cols-1 gap-6 sm:grid-cols-3">
                                 {featureButtons.map((feature, index) => (
                                     <button
                                         key={index}
@@ -104,6 +95,7 @@ const Home = () => {
                     </div>
                 </div>
             </div>
+            <Footer />
         </div>
     );
 };

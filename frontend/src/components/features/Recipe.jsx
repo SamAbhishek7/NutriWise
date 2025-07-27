@@ -17,19 +17,20 @@ const Updates = () => {
   const [loading, setLoading] = useState(false);
   const [foodItem, setFoodItem] = useState('');
   const [recipeData, setRecipeData] = useState(null);
+  const [error, setError] = useState('');
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError(''); // Reset any previous errors
+    
     if (!foodItem.trim()) {
-      toast({
-        title: 'Error',
-        description: 'Please enter a food item',
-        variant: 'destructive'
-      });
+      setError('Please enter a food item');
+      toast.error('Please enter a food item');
       return;
     }
 
     setLoading(true);
+    setRecipeData(null); // Clear previous recipe data
     try {
       const response = await fetch('http://localhost:8000/api/gemini/recipe', {
         method: 'POST',
@@ -41,17 +42,22 @@ const Updates = () => {
       });
 
       if (!response.ok) {
-        throw new Error('Failed to generate recipe');
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to generate recipe');
       }
 
       const data = await response.json();
+      
+      // Check if we got a valid recipe response
+      if (!data.recipe || !data.recipe.name) {
+        throw new Error('Cannot generate recipe at this moment. Please try another recipe.');
+      }
+      
       setRecipeData(data);
     } catch (error) {
-      toast({
-        title: 'Error',
-        description: error.message || 'Failed to generate recipe',
-        variant: 'destructive'
-      });
+      const errorMessage = 'Cannot generate recipe at this moment. Please try another recipe.';
+      setError(errorMessage);
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -74,7 +80,7 @@ const Updates = () => {
                   onChange={(e) => setFoodItem(e.target.value)}
                   className="flex-1"
                 />
-                <Button type="submit" disabled={loading}>
+                <Button type="submit" disabled={loading} className="bg-green-600 hover:bg-green-700 text-white">
                   {loading ? (
                     <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -86,6 +92,12 @@ const Updates = () => {
                 </Button>
               </div>
             </form>
+
+            {error && (
+              <div className="mt-4 p-4 bg-red-50 border border-red-200 rounded-md text-center">
+                <p className="text-red-700">Cannot generate recipe at this moment. Please try another recipe.</p>
+              </div>
+            )}
 
             {recipeData && (
               <div className="mt-6 space-y-6">

@@ -48,8 +48,11 @@ const Login = () => {
         throw new Error(data.error || 'Login failed');
       }
 
-      // Store user data in localStorage
+      // Store user data and token in localStorage
       localStorage.setItem('user', JSON.stringify(data.user));
+      if (data.token) {
+        localStorage.setItem('token', data.token);
+      }
 
       // Navigate to the originally requested page
       navigate(from, { replace: true });
